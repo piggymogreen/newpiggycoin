@@ -1,3 +1,8 @@
+PiggyHaste 1.3.0.0 (PiggyHaste):
+- Slow target blocktime to 3 mins
+- Update protocol version
+- Tighten timedrift allowance
+
 PiggyStakes 1.2.3.0 (Operation DERsig-Fix):
  - Added scriptpubkeyhex .conf directive (Needed for APIs)
  - Applied critical fix for OpenSSL DER signature handling.
