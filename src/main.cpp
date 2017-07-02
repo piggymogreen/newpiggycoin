@@ -40,10 +40,10 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // "standard" scrypt target limit
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nTargetSpacing = 1 * 60;           // 60 seconds
 unsigned int nStakeMinAge = 8 * 60 * 60;        // 8 hour
 unsigned int nStakeMaxAge = 9 * 30 * 24 * 60 * 60;  // 270 days ~9 months (9 months from genesis is mod1 fork point) // -1 = unlimited
 unsigned int nModifierInterval = 10 * 60;       // time to elapse before new modifier is computed
+unsigned int nTargetSpacing = MODIFIER1_TARGET_SPACING;     // target time between blocks
 
 int nCoinbaseMaturity = 50;
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -1081,6 +1081,19 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
+
+    // code from Britcoin 3.3 -- Mo
+    if (pindexBest)
+    {
+        if (pindexBest->nHeight+1 >= MODIFIER2_HEIGHT)
+        {
+            nTargetSpacing = MODIFIER2_TARGET_SPACING;
+        }
+        else
+        {
+            nTargetSpacing = MODIFIER1_TARGET_SPACING;
+        }
+    }
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
