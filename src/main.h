@@ -48,6 +48,8 @@ static const int64_t MODIFIER2_HEIGHT           = 1900000;   // I should find ou
 static const int64_t MODIFIER2_STAKE_INTEREST   = 3;        // Unchanged from previous
 static const int64_t MODIFIER2_TARGET_SPACING   = 3 * 60;   // Blocktime target 3 mins
 
+static const int64_t V2_DRIFT_PARAMS_TIME = 1506945600; // 2nd Oct 2017 12 noon GMT
+
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
@@ -61,11 +63,23 @@ static const int fHaveUPnP = false;
 static const uint256 hashGenesisBlock("0x00000561d6f5f76b0c101ba6bac27ad99a18fc8927c6af844adfd913097e9271");
 static const uint256 hashGenesisBlockTestNet("0x");
 
-// This will need to be addressed in a future hard fork.
-inline int64_t PastDrift(int64_t nTime)   { return nTime - 20 * 60; } // up to 20 minutes from the past
-//inline int64_t PastDrift(int64_t nTime)   { return nTime - (3 * 60); } // up to 3 minutes from the past (was 20 mins)
-inline int64_t FutureDrift(int64_t nTime) { return nTime + 20 * 60; } // up to 20 minutes from the future
-//inline int64_t FutureDrift(int64_t nTime) { return nTime + (4 * 60); } // up to 4 minutes from the future (was 20 mins)
+inline int64_t PastDrift(int64_t nTime)   {
+    if (nTime < V2_DRIFT_PARAMS_TIME){
+        return nTime - 20 * 60; // up to 20 minutes from the past
+    }
+    else {
+        return nTime - 3 * 60; // New time drift maximum -- 3 mins
+    }
+}
+
+inline int64_t FutureDrift(int64_t nTime) {
+    if (nTime < V2_DRIFT_PARAMS_TIME){
+        return nTime + 20 * 60; // up to 20 minutes from the future
+    }
+    else {
+        return nTime + 3 * 60; // 3 mins
+    }
+}
 
 
 extern libzerocoin::Params* ZCParams;
